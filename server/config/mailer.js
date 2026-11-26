@@ -1,9 +1,9 @@
-import nodemailer from "nodemailer";
+
 import { env } from "./env.js";
 import { createEmailService } from "../services/emailService.js";
 
 export const emailService = createEmailService({
-  createTransport: nodemailer.createTransport.bind(nodemailer),
-  smtp: env.smtp,
+  apiKey: process.env.RESEND_API_KEY,
+  from: process.env.RESEND_FROM,
   to: env.notifyTo,
 });

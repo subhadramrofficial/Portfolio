@@ -7,7 +7,9 @@ const toInt = (value, fallback) => {
   return Number.isFinite(n) ? n : fallback;
 };
 const toBool = (value, fallback = false) =>
-  value === undefined || value === "" ? fallback : ["true", "1", "yes"].includes(String(value).toLowerCase());
+  value === undefined || value === ""
+    ? fallback
+    : ["true", "1", "yes"].includes(String(value).toLowerCase());
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
@@ -16,7 +18,8 @@ let clientOrigins = (process.env.CLIENT_ORIGIN || "")
   .split(",")
   .map((o) => o.trim().replace(/\/+$/, ""))
   .filter(Boolean);
-if (!isProduction && clientOrigins.length === 0) clientOrigins = ["http://localhost:5173"];
+if (!isProduction && clientOrigins.length === 0)
+  clientOrigins = ["http://localhost:5173"];
 
 const smtp = {
   host: process.env.SMTP_HOST || "",
@@ -44,13 +47,18 @@ export function validateEnv(config = env) {
   const warnings = [];
   if (!config.mongoUri) errors.push("MONGODB_URI is required.");
   if (config.isProduction && config.clientOrigins.length === 0) {
-    errors.push("CLIENT_ORIGIN is required in production (set it to your frontend's exact origin).");
+    errors.push(
+      "CLIENT_ORIGIN is required in production (set it to your frontend's exact origin).",
+    );
   }
-  const { host, user, pass, from } = config.smtp;
-  if (!(host && user && pass && from && config.notifyTo)) {
+  const resendConfigured = Boolean(
+    process.env.RESEND_API_KEY && process.env.RESEND_FROM && config.notifyTo,
+  );
+
+  if (!resendConfigured) {
     warnings.push(
-      "SMTP is not fully configured (need SMTP_HOST, SMTP_USER, SMTP_PASS and CONTACT_RECIPIENT_EMAIL). " +
-        "Messages will be saved, but notification emails will NOT be sent."
+      "Resend is not fully configured (need RESEND_API_KEY, RESEND_FROM and CONTACT_RECIPIENT_EMAIL). " +
+        "Messages will be saved, but notification emails will NOT be sent.",
     );
   }
   return { errors, warnings };

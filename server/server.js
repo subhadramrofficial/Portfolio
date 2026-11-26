@@ -27,7 +27,7 @@ try {
 
 // Informational only: tells you at startup whether SMTP credentials work.
 emailService.verify().then((result) => {
-  if (result.ok) console.log("[mail] SMTP connection verified");
+  if (result.ok) console.log("[mail] Resend email service configured");
   else if (result.reason !== "not_configured") console.warn(`[mail] SMTP verification failed (${result.reason}). Notifications will fail until fixed.`);
 });
 
